@@ -31,19 +31,15 @@ func main() {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Only POST Methodallowed", http.StatusMethodNotAllowed)
+	if !utils.CheckRequestMethod(w, r, http.MethodPost) {
 		return
 	}
-
 	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+	if !utils.DecodeJSONBody(w, r, &user) {
 		return
 	}
 	var existingUserID int
-	err = db.DB.QueryRow("SELECT id FROM users WHERE email = $1", user.Email).Scan(&existingUserID)
+	err := db.DB.QueryRow("SELECT id FROM users WHERE email = $1", user.Email).Scan(&existingUserID)
 	if err != sql.ErrNoRows {
 		// If err == nil (found user) or another error happened
 		if err == nil {
