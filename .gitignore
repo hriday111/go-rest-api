@@ -1,0 +1,17 @@
+# Binaries
+*.exe
+*.out
+*.test
+
+# Output folders
+bin/
+build/
+
+# Dependency directories
+vendor/
+
+# IDE settings
+.idea/
+.vscode/
+*.swp
+.DS_Store
