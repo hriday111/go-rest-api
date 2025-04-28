@@ -18,7 +18,8 @@ func Connect() {
 	dbPassword := getEnv("DB_PASSWORD", "p@ssword")
 	dbName := getEnv("DB_NAME", "userdb")
 
-	connStr := fmt.Sprintf("Host=%s Port=%s User=%s Password=%s DBName=%s sslmode=disable",	dbHost, dbPort, dbUser, dbPassword, dbName)
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	dbHost, dbPort, dbUser, dbPassword, dbName)
 
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
