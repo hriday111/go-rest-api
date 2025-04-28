@@ -22,7 +22,7 @@ func main() {
 
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/login", loginHandler)
-	fmt.Println("Starting server on :8080...")
+	fmt.Println("Starting server on :8081...")
 	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		log.Fatalf("Error starting server: %v", err)
