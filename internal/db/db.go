@@ -11,14 +11,14 @@ import (
 var DB *sql.DB
 
 func Connect() {
-
+	var err error
 	dbHost := getEnv("DB_HOST", "localhost")
-	dbPost := getEnv("DB_PORT", "5432")
-	dbUser := getEnv("DB_USER", "admin")
-	dbPassword := getEnv("DB_PASSWORD", "adminpassword")
+	dbPort := getEnv("DB_PORT", "5432")
+	dbUser := getEnv("DB_USER", "hbarot")
+	dbPassword := getEnv("DB_PASSWORD", "p@ssword")
 	dbName := getEnv("DB_NAME", "userdb")
 
-	connStr := fmt.Sprintf("Host=%s Port=%s User=%s Password=%s DBName=%s sslmode=disable",	dbHost, dbPost, dbUser, dbPassword, dbName)
+	connStr := fmt.Sprintf("Host=%s Port=%s User=%s Password=%s DBName=%s sslmode=disable",	dbHost, dbPort, dbUser, dbPassword, dbName)
 
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {

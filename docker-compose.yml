@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  pg-database:
+    image: postgres
+    container_name: pg-database
+    environment:
+      POSTGRES_USER: hbarot
+      POSTGRES_PASSWORD: p@ssword
+      POSTGRES_DB: userdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+

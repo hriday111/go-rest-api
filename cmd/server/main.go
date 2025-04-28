@@ -15,6 +15,8 @@ type User struct {
 	Email string `json:"email"`
 }
 func main(){
+
+	db.Connect()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Hello, welcome to the Go REST API project!")
 	})
