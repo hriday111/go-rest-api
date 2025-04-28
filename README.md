@@ -1,1 +1,2 @@
-A Go rest API app built for user registeration using PostgreSQL 
+A simple RESTful API built with Go for user registration and login functionality. The project connects to a PostgreSQL database running inside a Docker container and follows professional Go project structure.
+
