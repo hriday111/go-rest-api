@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	//"database/sql"
+	"database/sql"
 
 	"github.com/hriday111/go-rest-api/internal/db"
 	"github.com/hriday111/go-rest-api/internal/models"
@@ -21,11 +21,55 @@ func main() {
 	})
 
 	http.HandleFunc("/register", registerHandler)
-
+	http.HandleFunc("/login", loginHandler)
 	fmt.Println("Starting server on :8080...")
 	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		log.Fatalf("Error starting server: %v", err)
+	}
+
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST Methodallowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+	var existingUserID int
+	err = db.DB.QueryRow("SELECT id FROM users WHERE email = $1", user.Email).Scan(&existingUserID)
+	if err != sql.ErrNoRows {
+		// If err == nil (found user) or another error happened
+		if err == nil {
+			// User exists, now check the password
+			var storedPassword string
+			err = db.DB.QueryRow("SELECT password FROM users WHERE email = $1", user.Email).Scan(&storedPassword)
+			if err != nil {
+				http.Error(w, "Error retrieving user password: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			// Compare the hashed password with the provided password
+			if !utils.CheckPasswordHash(user.Password, storedPassword) {
+				http.Error(w, "Invalid password", http.StatusUnauthorized)
+				return
+			}
+
+			// Password is correct, login successful
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintln(w, "Login successful! User ID:", existingUserID)
+			return
+
+		}
+
+		http.Error(w, "User does not exist "+err.Error(), http.StatusInternalServerError)
+
+		return
 	}
 
 }
@@ -43,7 +87,17 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-
+	var existingUserID int
+	err = db.DB.QueryRow("SELECT id FROM users WHERE email = $1", user.Email).Scan(&existingUserID)
+	if err != sql.ErrNoRows {
+		// If err == nil (found user) or another error happened
+		if err == nil {
+			http.Error(w, "Email already registered", http.StatusBadRequest)
+		} else {
+			http.Error(w, "Database error: "+err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
 	// Hash the password
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
